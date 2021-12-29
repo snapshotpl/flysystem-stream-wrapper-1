@@ -49,6 +49,11 @@ class StreamLockTest extends AbstractStreamCommandTest
             $this->fail('cannot initiate shared memory');
         }
 
+        if (version_compare(PHP_VERSION, '8.0.0') >= 0) {
+            $this->expectError();
+            $this->expectErrorMessage('Function shmop_close() is deprecated');
+        }
+
         try {
             $main = parallel(function () use ($id) {
                 $current = $this->getCurrent();
@@ -113,9 +118,5 @@ class StreamLockTest extends AbstractStreamCommandTest
         }
 
         $this->assertSame([1, 2], $result);
-
-        if (version_compare(PHP_VERSION, '8.0.0') >= 0) {
-            $this->expectError();
-        }
     }
 }
